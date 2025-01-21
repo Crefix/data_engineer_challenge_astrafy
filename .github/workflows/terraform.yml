@@ -1,0 +1,108 @@
+name: Terraform CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  terraform:
+    name: Terraform Validate and Plan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Terraform Init
+        env:
+          TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+        working-directory: terraform-project
+        run: terraform init
+
+      - name: Terraform Validate
+        env:
+          TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+        working-directory: terraform-project
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        env:
+          TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+        working-directory: terraform-project
+        run: terraform plan -out=tfplan      
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan
+          path: terraform-project/tfplan
+      
+      - name: Comment Terraform Plan on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            **Terraform Plan Output**
+            ```terraform
+            ${{ steps.plan.outputs.stdout }}
+            ```
+
+  apply:
+    name: Terraform Apply (Main Only)
+    needs: terraform
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Clean Artifact Directory
+        run: rm -rf terraform-project/tfplan
+
+      - name: Download Plan Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+          path: terraform-project/
+
+      - name: Terraform Init
+        env:
+          TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+        working-directory: terraform-project
+        run: terraform init
+
+      - name: Terraform Apply
+        env:
+          TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+        working-directory: terraform-project
+        run: terraform apply -auto-approve tfplan

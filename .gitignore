@@ -3,8 +3,17 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
 # C extensions
 *.so
+
+# dbt
+target/
+dbt_packages/
 
 # Distribution / packaging
 .Python
