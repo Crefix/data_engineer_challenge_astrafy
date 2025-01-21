@@ -39,6 +39,7 @@ jobs:
       - name: Terraform Validate
         env:
           TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
         working-directory: terraform-project
         run: terraform validate
 
@@ -46,6 +47,7 @@ jobs:
         id: plan
         env:
           TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
         working-directory: terraform-project
         run: terraform plan -out=tfplan      
 
@@ -94,11 +96,13 @@ jobs:
       - name: Terraform Init
         env:
           TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
         working-directory: terraform-project
         run: terraform init
 
       - name: Terraform Apply
         env:
           TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
         working-directory: terraform-project
         run: terraform apply -auto-approve tfplan
