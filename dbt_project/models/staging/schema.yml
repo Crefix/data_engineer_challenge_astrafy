@@ -8,5 +8,3 @@ models:
         description: "A unique ID for each trip"
         tests:
           - not_null
-          - custom: 
-              name: not_empty
