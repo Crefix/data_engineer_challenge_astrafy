@@ -20,7 +20,5 @@ models:
   chicago_taxi_trips:
     staging:
       +materialized: table
-      +schema: Chicago_Taxi_Trips
     marts:
       +materialized: table
-      +schema: Chicago_Taxi_Trips
