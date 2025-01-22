@@ -14,12 +14,13 @@ WITH new_data AS (
         taxi.dropoff_location,
         taxi.payment_type,
         taxi.tips,
+        taxi.trip_start_geo,
         weather.temperature,
         weather.weather_main,
         weather.weather_description,
         weather.humidity,
         weather.wind_speed,
-        weather.timestamp AS weather_timestamp
+        weather.timestamp
     FROM {{ ref('stg_chicago_taxi') }} taxi
     LEFT JOIN {{ ref('chicago_weather') }} weather
     ON DATE(taxi.trip_start_timestamp) = DATE(weather.timestamp)
