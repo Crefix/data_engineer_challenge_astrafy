@@ -1,0 +1,6 @@
+version: 2
+
+sources:
+  - name: Chicago_Taxi_Trips
+    tables:
+      - name: weather
