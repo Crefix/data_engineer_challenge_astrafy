@@ -1,0 +1,24 @@
+name: "chicago_taxi_trips"
+version: "1.0.0"
+config-version: 2
+
+profile: "default"
+
+model-paths: ["dbt_project/models"]
+analysis-paths: ["dbt_project/analyses"]
+test-paths: ["dbt_project/tests"]
+seed-paths: ["dbt_project/seeds"]
+macro-paths: ["dbt_project/macros"]
+snapshot-paths: ["dbt_project/snapshots"]
+
+target-path: "dbt_project/target"
+clean-targets: 
+  - "target"
+  - "dbt_packages"
+
+models:
+  chicago_taxi_trips:
+    staging:
+      +materialized: table
+    marts:
+      +materialized: table

@@ -3,8 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# dbt
+.dbt_project/target/
+.dbt_project/dbt_packages/
 
 # Distribution / packaging
 .Python
@@ -169,3 +175,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Default .gitignore content added by dbt Cloud# you shouldn't commit these into source control
+# these are the default directory names, adjust/add to fit your needs
+target/
+dbt_packages/
+logs/
+# end dbt Cloud content
