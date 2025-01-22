@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: stg_chicago_taxi
+    description: "Staging model for Chicago taxi trips"
+    columns:
+      - name: unique_key
+        description: "A unique ID for each trip"
+        tests:
+          - not_null
+          - custom: 
+              name: not_empty
